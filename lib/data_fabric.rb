@@ -156,7 +156,11 @@ module DataFabric
       connection_name_builder.join('_')
     end
     
-    def disconnect!
+   def disconnect!
+      cached_connections.delete(connection_name).disconnect! if connected?
+    end
+
+    def disconnect_all!
       # Close all cached connections.
       cached_connections.each do |connection_name, connection|
         cached_connections.delete(connection_name).disconnect!
