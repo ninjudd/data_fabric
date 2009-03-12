@@ -183,7 +183,7 @@ module DataFabric
   private
 
     def cached_connections
-      @cached_connections ||= {}
+      @@cached_connections ||= {}
     end
 
     def connection_name_builder
