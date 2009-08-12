@@ -205,16 +205,16 @@ module DataFabric
         raise ArgumentError, "Unknown database config: #{name}, have #{ActiveRecord::Base.configurations.inspect}" unless config
         logger.debug("Connecting to #{name}") if DataFabric.debugging?
 
+        @model_class.establish_connection(config)
+        @model_class.connection.verify!(0)
+        cached_connections[name] = @model_class.connection
+        @model_class.active_connections[@model_class.name] = self
+
         # Share a query cache with ActiveRecord::Base.
         connection.query_cache_enabled = ActiveRecord::Base.connection.query_cache_enabled
         if connection.query_cache_enabled and connection.instance_variable_get(:@query_cache).nil?
           connection.instance_variable_set(:@query_cache, ActiveRecord::Base.connection.instance_variable_get(:@query_cache)) 
         end
-
-        @model_class.establish_connection(config)
-        @model_class.connection.verify!(0)
-        cached_connections[name] = @model_class.connection
-        @model_class.active_connections[@model_class.name] = self
       end
       cached_connections[name].verify!(3600)
       cached_connections[name]
