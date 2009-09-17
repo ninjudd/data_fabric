@@ -147,6 +147,11 @@ module DataFabric
       with_master { connection.transaction(start_db_transaction, &block) }
     end
 
+    def kind_of?(klass)
+      return true if master.kind_of?(klass)
+      super
+    end
+
     def method_missing(method, *args, &block)
       logger.debug("Calling #{method} on #{connection}") if DataFabric.debugging?
       connection.send(method, *args, &block)
@@ -156,7 +161,7 @@ module DataFabric
       connection_name_builder.join('_')
     end
     
-   def disconnect!
+    def disconnect!
       cached_connections.delete(connection_name).disconnect! if connected?
     end
 
